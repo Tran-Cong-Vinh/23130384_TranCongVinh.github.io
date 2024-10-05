@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Đăng Nhập</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            display: none;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .link {
+            text-align: center;
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .hidden {
+            display: none;
+        }
+        #mainContainer {
+            display: none;
+        }
+        .tab {
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .tab-content {
+            display: none;
+            margin-top: 10px;
+        }
+        .active {
+            display: block;
+        }
+        #fileUpload {
+            display: none;
+        }
+        .file-list {
+            margin-top: 10px;
+        }
+        .file-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h2>Đăng Nhập</h2>
+        <input type="text" id="username" placeholder="Tài khoản" required>
+        <input type="password" id="password" placeholder="Mật khẩu" required>
+        <button onclick="login()">Đăng Nhập</button>
+        <button onclick="showRegister()">Đăng Ký</button>
+        <a href="#" class="link" onclick="showForgotPassword()">Quên Mật Khẩu</a>
+    </div>
+
+    <div class="container" id="registerContainer">
+        <h2>Đăng Ký</h2>
+        <input type="text" id="regUsername" placeholder="Tài khoản" required>
+        <input type="password" id="regPassword" placeholder="Mật khẩu" required>
+        <input type="password" id="regConfirmPassword" placeholder="Nhập lại mật khẩu" required>
+        <button onclick="register()">Đăng Ký</button>
+        <button onclick="showLogin()">Trở Về Đăng Nhập</button>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <h2>Trang Chính</h2>
+        <button class="tab" onclick="showTab('about')">About</button>
+        <button class="tab" onclick="showTab('labs')">Labs</button>
+        <div id="content" class="tab-content"></div>
+    </div>
+
+    <div class="container" id="fileUpload">
+        <h3>Tải lên File</h3>
+        <input type="file" id="fileInput" multiple>
+        <button onclick="uploadFile()">Tải lên</button>
+        <div id="fileList" class="file-list"></div>
+        <button onclick="showMain()">Quay lại</button>
+    </div>
+
+    <script>
+        let users = {};
+        let currentUser = '';
+        let uploadedFiles = [];
+
+        document.getElementById('loginContainer').style.display = 'block';
+
+        function showRegister() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('registerContainer').style.display = 'block';
+        }
+
+        function showLogin() {
+            document.getElementById('registerContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+        }
+
+        function showForgotPassword() {
+            const username = document.getElementById('username').value;
+            if (users[username]) {
+                alert('Mật khẩu của bạn là: ' + users[username]);
+            } else {
+                alert('Tài khoản không tồn tại.');
+            }
+        }
+
+        function register() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password === confirmPassword) {
+                users[username] = password;
+                alert('Đăng ký thành công!');
+                showLogin();
+            } else {
+                alert('Mật khẩu không khớp!');
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (users[username] && users[username] === password) {
+                currentUser = username;
+                alert('Đăng nhập thành công!');
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                showTab('about');
+            } else {
+                alert('Tài khoản hoặc mật khẩu không chính xác!');
+            }
+        }
+
+        function showTab(tab) {
+            const content = document.getElementById('content');
+            content.innerHTML = ''; // Clear previous content
+            if (tab === 'about') {
+                content.innerHTML = `
+                    <h3>Giới thiệu</h3>
+                    <p>Trần Công Vinh</p>
+                    <p>Email: trancongvinh1103@gmail.com</p>
+                    <p>Điện thoại: 0383632864</p>
+                    <p>Địa chỉ: KTX khu B-ĐHQG-TP.HCM</p>
+                    <h4>Giáo dục</h4>
+                    <p>Đại học Nông Lâm - Kỹ sư Công nghệ thông tin (2019-2023)</p>
+                    <h4>Kinh nghiệm làm việc</h4>
+                    <p>Công ty FPT - Lập trình viên (2023-2024)</p>
+                    <p>Tham gia phát triển và bảo trì các ứng dụng web.</p>
+                    <h4>Kỹ năng</h4>
+                    <p>Lập trình: HTML, CSS, JavaScript, Python</p>
+                    <p>Cơ sở dữ liệu: MySQL, MongoDB</p>
+                    <p>Framework: React, Node.js</p>
+                    <h4>Sở thích</h4>
+                    <p>Đọc sách, tham gia các khóa học trực tuyến, và khám phá công nghệ mới.</p>
+                    <button onclick="showMain()">Quay lại</button>
+                `;
+            } else if (tab === 'labs') {
+                content.innerHTML = `
+                    <h3>Labs</h3>
+                    <button class="tab" onclick="showFileUpload()">Lab 1</button>
+                    <button class="tab" onclick="showFileUpload()">Lab 2</button>
+                    <button class="tab" onclick="showFileUpload()">Lab 3</button>
+                    <button class="tab" onclick="showFileUpload()">Lab 4</button>
+                `;
+            }
+            content.classList.add('active');
+        }
+
+        function showFileUpload() {
+            document.getElementById('fileUpload').style.display = 'block';
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = ''; // Clear previous uploads
+            uploadedFiles.forEach(file => {
+                const listItem = document.createElement('div');
+                listItem.classList.add('file-item');
+                listItem.innerHTML = `
+                    ${file.name} <button onclick="viewFile('${file.name}')">Xem</button>
+                `;
+                fileList.appendChild(listItem);
+            });
+        }
+
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+
+            for (const file of files) {
+                uploadedFiles.push(file);
+                alert(`Tải lên thành công: ${file.name}`);
+            }
+            fileInput.value = ''; // Clear the input
+            showFileUpload(); // Refresh file list
+        }
+
+        function viewFile(fileName) {
+            const file = uploadedFiles.find(f => f.name === fileName);
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    alert(`Nội dung file ${fileName}:\n${content}`);
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function showMain() {
+            document.getElementById('fileUpload').style.display = 'none';
+            document.getElementById('content').innerHTML = '';
+            document.getElementById('content').classList.remove('active');
+            showTab('labs');
+        }
+
+        // Hiển thị trang đăng nhập ban đầu
+        showLogin();
+    </script>
+</body>
+</html>
